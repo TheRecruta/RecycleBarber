@@ -29,13 +29,16 @@ def login(): # a fazer
             else:
                 pass
 
-
 # cadastro
 def cadastrar():
     efetuado = False
     while efetuado != True:
         try:
-            cpf = int(input("Insira seu CPF. Não utilize pontos e traços."))
+            cpf = input("Insira seu CPF: ")
+            cpf = cpf.replace(".","") # retira pontos da string, caso o usuário colocar
+            cpf = cpf.replace("-","") # retira traços da string, caso o usuário colocar
+            if len(cpf) != 11: raise Exception # um CPF tem 11 digitos, se não tiver, levanta uma exceção
+            cpf = int(cpf) # para verificar se o CPF não tem letras ou nada a mais estranho
         except:
             print("Erro: CPF inválido. Por favor, tente novamente.")
         else:
@@ -46,22 +49,32 @@ def cadastrar():
             nome_empresa = input("Nome da empresa: ")
             username = input("Nome do empresário: ")
             email = input("E-mail da empresa: ").lower()
-            password = input("Insira a sua senha.")
+            password = input("Insira a sua senha: ")
             
             confirm_password = "" # confirmação de senha
             while confirm_password != password:
                 confirm_password = input("Confirme sua senha: ")
                 if confirm_password != password: print("A senha entrada foi diferente.")
             
-            endereco = {
-                "UF": input("Estado: "),
-                "cidade": input("Cidade: "),
-                "bairro": input("Bairro: "),
-                "CEP": input("CEP: "),
-                "rua": input("Rua: "),
-                "numero": input("Número: "),
-                "complemento": input("Complemento:")
-            }
+            endereco = {}
+            endereco["UF"] = input("Estado: ")
+            endereco["cidade"] = input("Cidade: ")
+            endereco["bairro"] = input("Bairro: ")
+            
+            while True:
+                try:
+                    endereco["CEP"] = input("CEP: ") # mesma lógica de verificação do CPF
+                    endereco["CEP"] = endereco["CEP"].replace("-","")
+                    if len(endereco["CEP"]) != 8: raise Exception
+                    endereco["CEP"] = int(endereco["CEP"])
+                except: 
+                    print("CEP inválido.")
+                else: 
+                    break
+
+            endereco["rua"] = input("Rua: ")
+            endereco["numero"] = input("Número: ")
+            endereco["complemento"] = input("Complemento: ")
             
             new_user = User(cpf, nome_empresa, username, email, password, endereco)
             usuarios_cadastrados[str(cpf)] = new_user
